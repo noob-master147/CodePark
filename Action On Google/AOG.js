@@ -1,40 +1,31 @@
 const fetch = require('node-fetch')
-
-
-const tag = ['dsa', 'loop']
+const tag = ['loop', 'array', 'tree', 'dsa']
 const preUrl = 'https://api.codepark.in/topic/'
-const postUrl = '/related/questions?node=0'
+const postUrl = '/related/questions'
 const urlList = []
-const quesUidList = []
-const quesApiList = []
-
-
+const questionList = []
 for (let index = 0; index < tag.length; index++) {
   const element = tag[index];
   const url = preUrl + element + postUrl
   urlList.push(url)
 }
+const getQuestion = new Promise((resolve, reject) => {
+  urlList.forEach((url) => {
+    fetch(url)
+      .then(res => res.json())
+      .then(json => {
+        json.questions.forEach((obj) => {
+          questionList.push(obj.question);
+        })
+      })
+      .then(res => {
+        setTimeout(() => {
+          resolve()
+        }, 5000);
+      })
+  })
+})
 
-// console.log(urlList)
-
-// for (let index = 0; index < urlList.length; index++) {
-//   const api = urlList[index];
-
-//   fetch(api)
-//   .then(response => response.json)
-//   .then(json => console.log(json.questionData.question))
-//   .catch(error => console.log(error))
-
-// }
-
-const getQuestion = function (agent) {
-  fetch('https://api.codepark.in/topic/dsa/related/questions?node=0')
-    .then(res => res.json())
-    .then(json => {
-      quesName = json.questions[0].question
-      console.log(quesName)
-    })
-    .catch(err => console.log(err))
-}
-
-getQuestion()
+getQuestion
+  .then(res => console.log(questionList))
+  .catch(e => console.log(e))
