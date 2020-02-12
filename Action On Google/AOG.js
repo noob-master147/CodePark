@@ -23,10 +23,6 @@ const getQuestion = (() => {
           redirectList.push(`https://www.codepark.in/question/view/${obj.qname}/${obj.uid}`);
         })
       })
-      .then(() => {
-        setTimeout(() => {
-        }, 5000);
-      })
       .then(() =>{
         console.log(questionList)
         console.log(redirectList)

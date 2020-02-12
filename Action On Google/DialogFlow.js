@@ -22,11 +22,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     agent.add(`I didn't understand`);
     agent.add(`I'm sorry, can you try again?`);
   }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
   const getQuestion = ((agent) => {
-    const tag = ['loop'];
-    const preUrl = 'https://api.codepark.in/topic/';
-    const postUrl = '/related/questions';
+    const tag = agent.parameters.tag;
     const urlList = [];
     const questionList = [];
     const redirectList = [];
@@ -34,7 +35,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     //Loop to create the api urls from tags
     for (let index = 0; index < tag.length; index++) {
       const element = tag[index];
-      const url = preUrl + element + postUrl;
+      const url = `https://api.codepark.in/topic/${element}/related/questions`;
       urlList.push(url);
     }
     urlList.forEach((url) => {
@@ -44,27 +45,21 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
           json.questions.forEach((obj) => {
             questionList.push(`https://api.codepark.in/content/questions/details/${obj.uid}`);
             redirectList.push(`https://www.codepark.in/question/view/${obj.qname}/${obj.uid}`);
-          })
+          });
         })
         .then(() => {
           setTimeout(() => {
           }, 3000);
         })
         .then(() => {
-          // console.log(questionList)
+          //console.log(questionList);
           // console.log(quesName)
           redirectList.forEach(redirect => {
-            agent.add(new Card({
-              title: ' ',
-              //imageUrl: 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png',
-              buttonText: 'Click to View',
-              buttonUrl: redirect
-            })
-            );
+            agent.add(redirect);
           });
-        })
-    })
-  })
+        });
+    });
+  });
 
 
   // // Uncomment and edit to make your own intent handler
@@ -104,14 +99,3 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   // intentMap.set('', googleAssistantHandler);
   agent.handleRequest(intentMap);
 });
-
-
-// agent.add(`This message is from Dialogflow's Cloud Functions for Firebase editor!`);
-  //   agent.add(new Card({
-  //       title: `Title: this is a card title`,
-  //       imageUrl: 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png',
-  //       text: `This is the body text of a card.  You can even use line\n  breaks and emoji! 💁`,
-  //       buttonText: 'This is a button',
-  //       buttonUrl: 'https://assistant.google.com/'
-  //     })
-  //   );
