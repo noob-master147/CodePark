@@ -22,43 +22,45 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     agent.add(`I didn't understand`);
     agent.add(`I'm sorry, can you try again?`);
   }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-  const getQuestion = ((agent) => {
-    const tag = agent.parameters.tag;
-    const urlList = [];
-    const questionList = [];
-    const redirectList = [];
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //Loop to create the api urls from tags
-    for (let index = 0; index < tag.length; index++) {
-      const element = tag[index];
-      const url = `https://api.codepark.in/topic/${element}/related/questions`;
-      urlList.push(url);
-    }
-    urlList.forEach((url) => {
-      fetch(url)
-        .then(res => res.json())
-        .then(json => {
-          json.questions.forEach((obj) => {
-            questionList.push(`https://api.codepark.in/content/questions/details/${obj.uid}`);
-            redirectList.push(`https://www.codepark.in/question/view/${obj.qname}/${obj.uid}`);
+  const getQuestion = ((agent) => {
+    return new Promise((resolve, reject) => {
+      const tag = agent.parameters.tag;
+      const urlList = [];
+      const questionList = [];
+      const redirectList = [];
+
+      //Loop to create the api urls from tags
+      for (let index = 0; index < tag.length; index++) {
+        const element = tag[index];
+        const url = `https://api.codepark.in/topic/${element}/related/questions`;
+        urlList.push(url);
+      }
+      urlList.forEach((url) => {
+        fetch(url)
+          .then(res => res.json())
+          .then(json => {
+            json.questions.forEach((obj) => {
+              questionList.push(`https://api.codepark.in/content/questions/details/${obj.uid}`);
+              redirectList.push(`https://www.codepark.in/question/view/${obj.qname}/${obj.uid}`);
+            });
+          })
+          .then(() => {
+            setTimeout(() => {
+            }, 3000);
+          })
+          .then(() => {
+            //console.log(questionList);
+            // console.log(quesName)
+            redirectList.forEach(redirect => {
+              agent.add(redirect);
+            });
           });
-        })
-        .then(() => {
-          setTimeout(() => {
-          }, 3000);
-        })
-        .then(() => {
-          //console.log(questionList);
-          // console.log(quesName)
-          redirectList.forEach(redirect => {
-            agent.add(redirect);
-          });
-        });
-    });
+      });
+    })
   });
 
 
