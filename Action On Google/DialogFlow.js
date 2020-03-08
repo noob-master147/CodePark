@@ -25,43 +25,50 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const fetch = require('node-fetch');
 
-  const getQuestion = ((agent) => {
+  const getQuestion = (agent) => {
     return new Promise((resolve, reject) => {
       const tag = agent.parameters.tag;
-      const urlList = [];
-      const questionList = [];
+      const apiList = [];
       const redirectList = [];
-
-      //Loop to create the api urls from tags
-      for (let index = 0; index < tag.length; index++) {
-        const element = tag[index];
-        const url = `https://api.codepark.in/topic/${element}/related/questions`;
-        urlList.push(url);
-      }
-      urlList.forEach((url) => {
-        fetch(url)
-          .then(res => res.json())
-          .then(json => {
-            json.questions.forEach((obj) => {
-              questionList.push(`https://api.codepark.in/content/questions/details/${obj.uid}`);
-              redirectList.push(`https://www.codepark.in/question/view/${obj.qname}/${obj.uid}`);
+      tag.forEach(tag => {
+        const url = `https://api.codepark.in/topic/${tag}/related/questions`;
+        apiList.push(url);
+      });
+      apiList.forEach(api => {
+        fetch(api)
+          .then((res) => res.json())
+          .then((json) => json.questions)
+          .then((question) => {
+            question.forEach(question => {
+              const listItem = `https://www.codepark.in/question/view/${question.qname}/${question.uid}`;
+              redirectList.push(listItem);
+              resolve(redirectList);
             });
           })
-          .then(() => {
-            setTimeout(() => {
-            }, 3000);
-          })
-          .then(() => {
-            //console.log(questionList);
-            // console.log(quesName)
-            redirectList.forEach(redirect => {
-              agent.add(redirect);
-            });
+          .catch((error) => {
+            reject(error);
           });
       });
+    });
+  };
+
+  getQuestion(agent)
+    .then((res) => {
+      console.log(res);
+      agent.add(res);
     })
-  });
+    .catch((err) => {
+      console.log('Encountered An Error', err);
+    });
+
+
+
+
+
+
+
 
 
   // // Uncomment and edit to make your own intent handler
