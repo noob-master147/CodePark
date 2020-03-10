@@ -15,7 +15,10 @@ const getQuestion = () => {
                 .then((json) => json.questions)
                 .then((question) => {
                     question.forEach(question => {
-                        const listItem = `https://www.codepark.in/question/view/${question.qname}/${question.uid}`
+                        const listItem = {
+                            url: `https://www.codepark.in/question/view/${question.qname}/${question.uid}`,
+                            name: `${question.question}`
+                        }
                         redirectList.push(listItem)
                         resolve(redirectList)
                     })
@@ -28,9 +31,12 @@ const getQuestion = () => {
 }
 
 getQuestion()
-.then((res) =>{
-    console.log(res)
-})
-.catch((err) => {
-    console.log('Encountered An Error',err)
-})
+    .then((res) => {
+        console.log(res[0].url)
+        console.log(res[0].name)
+    })
+    .catch((err) => {
+        console.log('Encountered An Error', err)
+    })
+
+
