@@ -21,15 +21,56 @@ router.post('/', (req, res) => {
                   }
                 },
                 {
-                  "basicCard": {
-                    "title": "CodePark",
-                    "subtitle": "Question",
-                    "formattedText": redirectObject[0].name,
-                    "buttons": [
+                  "carouselBrowse": {
+                    "items": [
                       {
-                        "title": "Click Here",
+                        "title": redirectObject[0].name,
                         "openUrlAction": {
                           "url": redirectObject[0].url
+                        },
+                        "image": {
+                          "url":"https://i.ibb.co/DVwng4F/logo.png",
+                          "accessibilityText": "CodePark"
+                        }
+                      },
+                      {
+                        "title": redirectObject[1].name,
+                        "openUrlAction": {
+                          "url": redirectObject[1].url
+                        },
+                        "image": {
+                          "url":"https://i.ibb.co/DVwng4F/logo.png",
+                          "accessibilityText": "CodePark"
+                        }
+                      },
+                      {
+                        "title": redirectObject[2].name,
+                        "openUrlAction": {
+                          "url": redirectObject[2].url
+                        },
+                        "image": {
+                          "url":"https://i.ibb.co/DVwng4F/logo.png",
+                          "accessibilityText": "CodePark"
+                        }
+                      },
+                      {
+                        "title": redirectObject[3].name,
+                        "openUrlAction": {
+                          "url": redirectObject[3].url
+                        },
+                        "image": {
+                          "url":"https://i.ibb.co/DVwng4F/logo.png",
+                          "accessibilityText": "CodePark"
+                        }
+                      },
+                      {
+                        "title": redirectObject[4].name,
+                        "openUrlAction": {
+                          "url": redirectObject[4].url
+                        },
+                        "image": {
+                          "url":"https://i.ibb.co/DVwng4F/logo.png",
+                          "accessibilityText": "CodePark"
                         }
                       }
                     ]
@@ -49,3 +90,4 @@ router.post('/', (req, res) => {
 })
 
 module.exports = router;
+
