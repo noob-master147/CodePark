@@ -17,20 +17,33 @@ const returnQuestion = (req) => {
                 .then((res) => res.json())
                 .then((json) => {
                     if (json.code == 0) {
-                        return json.questions
+                        return ({
+                            question: json.questions,
+                            code: json.code
+                        })
                     } else {
                         const item = [
                             {
                                 "simpleResponse": {
                                     "textToSpeech": `${json.message}`
                                 }
+                            },
+                            {
+                                "simpleResponse": {
+                                    "textToSpeech": `Try something else?`
+                                }
                             }
+                            
                         ]
-                        resolve(item)
+                        resolve({
+                            item: item, 
+                            code: json.code
+                        })
                     }
                 })
-                .then((question) => {
-                    question.forEach(question => {
+                .then((data) => {
+                    // console.log("1 ", data.code)
+                    data.question.forEach(question => {
                         const listItem = {
                             url: `https://www.codepark.in/question/view/${question.qname}/${question.uid}`,
                             name: `${question.question}`,
@@ -38,16 +51,19 @@ const returnQuestion = (req) => {
                         }
                         redirectList.push(listItem)
                     })
-                    // console.log(redirectList)
-                    
-                    return redirectList
+
+                    return ({
+                        redirectList: redirectList,
+                        code: data.code
+                    })
                 })
 
-                .then((redirectObject) => {
-                    if (redirectObject.length >= 2) {
+                .then((data) => {
+                    // console.log("2 ", data.code)
+                    if (data.redirectList.length >= 2) {
                         const carouselBrowseItem = []
-                        redirectObject.forEach(obj => {
-                            const data = {
+                        data.redirectList.forEach(obj => {
+                            const Qdata = {
                                 "title": obj.name,
                                 "openUrlAction": {
                                     "url": obj.url
@@ -58,7 +74,7 @@ const returnQuestion = (req) => {
                                     "accessibilityText": "CodePark"
                                 }
                             }
-                            carouselBrowseItem.push(data)
+                            carouselBrowseItem.push(Qdata)
                         })
                         const item = [
                             {
@@ -72,7 +88,10 @@ const returnQuestion = (req) => {
                                 }
                             }
                         ]
-                        resolve(item)
+                        resolve({
+                            item: item, 
+                            code: data.code
+                        })
 
                     } else {
                         const item = [
@@ -83,8 +102,8 @@ const returnQuestion = (req) => {
                             },
                             {
                                 "basicCard": {
-                                    "title": `${redirectObject[0].name}`,
-                                    "subtitle": `Solved By ${redirectObject[0].answer} Users`,
+                                    "title": `${redirectList[0].name}`,
+                                    "subtitle": `Solved By ${redirectList[0].answer} Users`,
                                     "image": {
                                         "url": "https://i.ibb.co/DVwng4F/logo.png",
                                         "accessibilityText": "CodePark"
@@ -93,14 +112,17 @@ const returnQuestion = (req) => {
                                         {
                                             "title": "Click Here",
                                             "openUrlAction": {
-                                                "url": redirectObject[0].url
+                                                "url": redirectList[0].url
                                             }
                                         }
                                     ]
                                 }
                             }
                         ]
-                        resolve(item)
+                        resolve({
+                            item: item, 
+                            code: data.code
+                        })
                     }
                 })
                 .catch(error => reject(error))
